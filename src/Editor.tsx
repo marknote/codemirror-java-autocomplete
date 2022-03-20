@@ -5,24 +5,83 @@ import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { JavaLexer } from './grammar/JavaLexer';
 import { JavaParser } from './grammar/JavaParser';
 import * as c3 from 'antlr4-c3';
-
+import {CaretPosition,  TokenPosition} from './components/autocomplete/types';
+import { SymbolTableVisitor } from './components/autocomplete/symbol-table-visitor';
+import {ParseTree, TerminalNode} from "antlr4ts/tree";
+import { computeTokenPosition } from './components/autocomplete/compute-token-position';
 let currentContent = '';
+let currentCursor = 0;
+
+function getSuggestions(
+    code: string,
+    caretPosition: CaretPosition) {
+    let input = CharStreams.fromString(code);
+    let lexer = new JavaLexer(input);
+    let tokenStream = new CommonTokenStream(lexer);
+    let parser = new JavaParser(tokenStream);
+
+    let parseTree = parser.expression();
+
+    let position = computeTokenPosition(parseTree, tokenStream, caretPosition);
+    if(!position) {
+        return [];
+    }
+    return getSuggestionsForParseTree(
+        parser, parseTree, () => new SymbolTableVisitor().visit(parseTree), position);
+}
+
+function getSuggestionsForParseTree(
+    parser: JavaParser, parseTree: ParseTree, symbolTableFn: () => c3.SymbolTable, position: TokenPosition) {
+    let core = new c3.CodeCompletionCore(parser);
+    // Luckily, the Kotlin lexer defines all keywords and identifiers after operators,
+    // so we can simply exclude the first non-keyword tokens
+    const ignored:number[] = [];
+//We don't handle labels for simplicity
+    core.ignoredTokens = new Set(ignored);
+    core.preferredRules = new Set([JavaParser.RULE_variableDeclarator, JavaParser.RULE_arguments]);
+    let candidates = core.collectCandidates(position.index);
+    const completions = [];
+
+    const tokens: string[] = [];
+    candidates.tokens.forEach((_, k) => {
+        
+            const symbolicName = parser.vocabulary.getSymbolicName(k);
+            if (symbolicName) {
+                tokens.push(symbolicName.toLowerCase());
+            }
+        
+    });
+    const isIgnoredToken =
+        position.context instanceof TerminalNode &&
+        ignored.indexOf(position.context.symbol.type) >= 0;
+    const textToMatch = isIgnoredToken ? '' : position.text;
+    completions.push(...filterTokens(textToMatch, tokens));
+    return completions;
+}
+
+function filterTokens(text: string, candidates: string[]) {
+    if(text.trim().length === 0) {
+        return candidates;
+    } else {
+        return candidates.filter(c => c.toLowerCase().startsWith(text.toLowerCase()));
+    }
+}
+
 
 const parseAndProvideCandidates = (content: string) => {
-    const inputStream = CharStreams.fromString(content);
+    const caretPosition = {line: 0, column: 1};
+    return getSuggestions(content, caretPosition);
+    /*const inputStream = CharStreams.fromString(content);
     const lexer = new JavaLexer(inputStream);
     const tokenStream = new CommonTokenStream(lexer);
 
     const parser = new JavaParser(tokenStream);
-
-    //parser.expression();
-
     const core = new c3.CodeCompletionCore(parser);
     core.preferredRules = new Set([
         JavaParser.RULE_classType, JavaParser.RULE_packageDeclaration, JavaParser.RULE_identifier,
     ]);
-    const candidates = core.collectCandidates(0);
-    return candidates;
+    const candidates = core.collectCandidates(currentCursor);
+    return candidates;*/
 }
 
 const javaCompletion = autocompletion({
@@ -63,6 +122,10 @@ const javaCompletion = autocompletion({
 function onCodeChange(value: string, viewUpdate:ViewUpdate) {
     console.log('value:', value);
     currentContent = value;
+    console.log('viewupdate',viewUpdate);
+    const range = viewUpdate.state.selection.ranges[0];
+    currentCursor = range.from;
+
 }
 
 export default function Editor() {
