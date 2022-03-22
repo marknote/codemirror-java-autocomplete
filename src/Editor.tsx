@@ -1,72 +1,10 @@
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
 import { autocompletion, completeFromList } from '@codemirror/autocomplete';
 import { java } from '@codemirror/lang-java';
-import { CharStreams, CommonTokenStream } from 'antlr4ts';
-import { JavaLexer } from './grammar/JavaLexer';
-import { JavaParser } from './grammar/JavaParser';
-import * as c3 from 'antlr4-c3';
-import {CaretPosition,  TokenPosition} from './components/autocomplete/types';
-import { SymbolTableVisitor } from './components/autocomplete/symbol-table-visitor';
-import {ParseTree, TerminalNode} from "antlr4ts/tree";
-import { computeTokenPosition } from './components/autocomplete/compute-token-position';
+import { getSuggestions } from './components/autocomplete/suggest';
+
 let currentContent = '';
 let currentCursor = {line: 0, column: 0};
-
-function getSuggestions(code: string, caretPosition: CaretPosition) {
-  
-    const lexer = new JavaLexer(CharStreams.fromString(code));
-    const tokenStream = new CommonTokenStream(lexer);
-    const parser = new JavaParser(tokenStream);
-    const parseTree = parser.expression();
-    const position = computeTokenPosition(parseTree, tokenStream, caretPosition);
-    if (!position) {
-        return [];
-    }
-    return getSuggestionsForParse(
-        parser, position);
-}
-
-function getSuggestionsForParse(
-    parser: JavaParser,
-    position: TokenPosition) {
-    const core = new c3.CodeCompletionCore(parser);
-    // Luckily, the Kotlin lexer defines all keywords and identifiers after operators,
-    // so we can simply exclude the first non-keyword tokens
-    const ignored:number[] = [];
-    //We don't handle labels for simplicity
-    core.ignoredTokens = new Set(ignored);
-    core.preferredRules = new Set([JavaParser.RULE_variableDeclarator, JavaParser.RULE_arguments]);
-    const candidates = core.collectCandidates(position.index);
-    const completions = [];
-
-    const tokens: string[] = [];
-    candidates.tokens.forEach((_, k) => {
-        
-            const symbolicName = parser.vocabulary.getSymbolicName(k);
-            if (symbolicName) {
-                tokens.push(symbolicName.toLowerCase());
-            }
-        
-    });
-    const isIgnoredToken =
-        position.context instanceof TerminalNode &&
-        ignored.indexOf(position.context.symbol.type) >= 0;
-    const textToMatch = isIgnoredToken ? '' : position.text;
-    completions.push(...filterTokens(textToMatch, tokens));
-    return completions;
-}
-
-function filterTokens(text: string, candidates: string[]) {
-    if (text.trim().length === 0) {
-        return candidates;
-    } else {
-        return candidates.filter(c => c.toLowerCase().startsWith(text.toLowerCase()));
-    }
-}
-
-const parseAndProvideCandidates = (content: string) => {
-    return getSuggestions(content, currentCursor);
-}
 
 const javaCompletion = autocompletion({
     activateOnTyping: true,
@@ -74,7 +12,7 @@ const javaCompletion = autocompletion({
       async (ctx) => {
         const { pos } = ctx;
         try {
-          const result = parseAndProvideCandidates(currentContent);
+          const result = getSuggestions(currentContent, currentCursor);
           if (!result || result.length === 0) {
             console.log('Unable to get completions', { pos });
             return null;
@@ -110,7 +48,6 @@ function onCodeChange(value: string, viewUpdate:ViewUpdate) {
     currentContent = value;
     console.log('viewupdate',viewUpdate);
     const range = viewUpdate.state.selection.ranges[0];
-    //const doc = viewUpdate.state.doc;
     const pos = range.from;
     const subText = value.substring(0, pos);
     const parts = subText.split('\n');
