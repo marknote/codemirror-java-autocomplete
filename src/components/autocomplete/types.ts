@@ -1,5 +1,5 @@
-import {ParseTree} from "antlr4ts/tree";
-import {TokenStream} from "antlr4ts";
+import {ParseTree} from 'antlr4ts/tree';
+import {TokenStream} from 'antlr4ts';
 
 export type CaretPosition = { line: number, column: number };
 export type TokenPosition = { index: number, context: ParseTree, text: string };

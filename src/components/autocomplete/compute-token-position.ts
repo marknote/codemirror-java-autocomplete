@@ -1,7 +1,7 @@
-import {ParseTree, TerminalNode} from "antlr4ts/tree";
+import {ParseTree, TerminalNode} from 'antlr4ts/tree';
 
-import {ParserRuleContext, Token, TokenStream} from "antlr4ts";
-import {CaretPosition, TokenPosition} from "./types";
+import {ParserRuleContext, Token, TokenStream} from 'antlr4ts';
+import {CaretPosition, TokenPosition} from './types';
 
 export function tokenPositionComputer(identifierTokenTypes: number[] = []) {
     return (parseTree: ParseTree, tokens: TokenStream, caretPosition: CaretPosition) =>
@@ -19,8 +19,8 @@ export function computeTokenPosition(
 }
 
 function positionOfToken(token: Token, text: string, caretPosition: CaretPosition, identifierTokenTypes: number[], parseTree: ParseTree) {
-    let start = token.charPositionInLine;
-    let stop = token.charPositionInLine + text.length;
+    const start = token.charPositionInLine;
+    const stop = token.charPositionInLine + text.length;
     if (token.line === caretPosition.line && start <= caretPosition.column && stop >= caretPosition.column) {
         let index = token.tokenIndex;
         if (identifierTokenTypes.includes(token.type)) {
@@ -38,9 +38,7 @@ function positionOfToken(token: Token, text: string, caretPosition: CaretPositio
 
 function computeTokenPositionOfTerminal(
     parseTree: TerminalNode, tokens: TokenStream, caretPosition: CaretPosition, identifierTokenTypes: number[]) {
-    let token = parseTree.symbol;
-    let text = parseTree.text;
-    return positionOfToken(token, text, caretPosition, identifierTokenTypes, parseTree);
+    return positionOfToken(parseTree.symbol, parseTree.text, caretPosition, identifierTokenTypes, parseTree);
 }
 
 function computeTokenPositionOfChildNode(

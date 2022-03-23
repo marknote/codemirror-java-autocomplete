@@ -3,7 +3,7 @@ import { JavaLexer } from '../../grammar/JavaLexer';
 import { JavaParser } from '../../grammar/JavaParser';
 import * as c3 from 'antlr4-c3';
 import {CaretPosition,  TokenPosition} from './types';
-import { TerminalNode} from "antlr4ts/tree";
+import { TerminalNode} from 'antlr4ts/tree';
 import { computeTokenPosition } from './compute-token-position';
 
 
