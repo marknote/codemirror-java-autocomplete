@@ -1,5 +1,7 @@
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
 import { autocompletion, completeFromList } from '@codemirror/autocomplete';
+import { indentUnit } from '@codemirror/language';
+
 import { java } from '@codemirror/lang-java';
 import { getSuggestions } from './components/autocomplete/suggest';
 
@@ -68,7 +70,7 @@ public class Demo {
     <CodeMirror
       value={initCode}
       height="100vh"
-      extensions={[javaCompletion, java()]}
+      extensions={[javaCompletion, java(), indentUnit.of('    ')]}
       onChange={(value, viewUpdate) => {
         onCodeChange(value, viewUpdate);
       }}
