@@ -1,0 +1,29 @@
+name: Lite Linter
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '**'
+jobs:
+  codeQuality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Set fetch-depth: 0 to fetch all history for all branches and tags.
+    - name: code scan
+      run: |
+         docker run -e GENERATE_HTML_REPORT=true   --rm    \
+         --volume /tmp:/tmp \
+         --volume "$PWD":/home/linter/code registry.gitlab.com/billyan2018/lite-linter:latest  \
+         && cp /tmp/gl-code-quality-report.json* .
+    - name: Archive code quality report
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-quality-report
+        path: |
+          gl-code-quality-report.json
+          gl-code-quality-report.json.html
