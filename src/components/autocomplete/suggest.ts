@@ -1,6 +1,6 @@
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
-import { JavaLexer } from '../../grammar/JavaLexer';
-import { JavaParser } from '../../grammar/JavaParser';
+import { JavaLexer } from '../../generated/JavaLexer';
+import { JavaParser } from '../../generated/JavaParser';
 import * as c3 from 'antlr4-c3';
 import {CaretPosition,  TokenPosition} from './types';
 import { TerminalNode} from 'antlr4ts/tree';
@@ -17,8 +17,7 @@ export function getSuggestions(code: string, caretPosition: CaretPosition) {
     if (!position) {
         return [];
     }
-    return getSuggestionsForParse(
-        parser, position);
+    return getSuggestionsForParse(parser, position);
 }
 
 function getSuggestionsForParse(

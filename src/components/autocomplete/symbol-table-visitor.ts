@@ -1,11 +1,11 @@
-import { JavaParserVisitor } from '../../grammar/JavaParserVisitor';
+import { JavaParserVisitor } from '../../generated/JavaParserVisitor';
 import {RoutineSymbol, ScopedSymbol, SymbolTable, VariableSymbol} from 'antlr4-c3';
 import {AbstractParseTreeVisitor, ParseTree} from 'antlr4ts/tree';
-import {MethodDeclarationContext, LocalVariableDeclarationContext} from '../../grammar/JavaParser';
+import {MethodDeclarationContext, LocalVariableDeclarationContext} from '../../generated/JavaParser';
 
 export class SymbolTableVisitor extends AbstractParseTreeVisitor<SymbolTable> implements JavaParserVisitor<SymbolTable> {
     constructor(
-        protected readonly symbolTable = new SymbolTable("", {}),
+        protected readonly symbolTable = new SymbolTable('', {}),
         protected scope = symbolTable.addNewSymbolOfType(ScopedSymbol, undefined)) {
         super();
     }
