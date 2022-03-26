@@ -44,7 +44,7 @@ function getSuggestionsForParse(
     ]);*/
     const candidates = core.collectCandidates(tokenPosition.index);
     console.log(candidates);
-    const completions: Completion[] = [];
+    let completions: Completion[] = [];
 
     candidates.tokens.forEach((_, k) => {
         const symbolicName = parser.vocabulary.getSymbolicName(k);
@@ -56,7 +56,7 @@ function getSuggestionsForParse(
         }
     });
 
-    completions.concat(suggestVariables(tokenStream, tokenPosition, caretPosition));
+    completions = completions.concat(suggestIdentifiers(tokenStream, tokenPosition, caretPosition));
 
     const isIgnoredToken =
         tokenPosition.context instanceof TerminalNode &&
@@ -66,27 +66,18 @@ function getSuggestionsForParse(
 
 }
 
-
-
-
-
-function suggestVariables(tokenStream: CommonTokenStream, tokenPosition: TokenPosition, caretPosition: CaretPosition): Completion[] {
-    const completions = [];
-    const ts = tokenStream.getTokens();
-    const tok = tokenPosition.index;
-
-    for (let i = 0; i <= tok; i++) {
-        const item = ts[i];
-        if (item.text != null
-            && item.type === JavaLexer.IDENTIFIER
-            && item.line !== caretPosition.line) {
-            completions.push({
-                label: item.text,
-                type: 'variable'
-            });
-        }
-    }
-    return completions;
+function suggestIdentifiers(tokenStream: CommonTokenStream, tokenPosition: TokenPosition, caretPosition: CaretPosition): Completion[] {
+    return tokenStream.getTokens()
+    .filter(item => item.type === JavaLexer.IDENTIFIER
+        && item.text != null
+        && item.line !== caretPosition.line
+        )
+    .map(item => {
+        return {
+            label: item.text || '',
+            type: 'variable'
+        };
+    });
 }
 
 function filterTokens(text: string, candidates: Completion[]): Completion[] {
