@@ -1,9 +1,7 @@
 
-import './App.css';
 import Editor from './Editor';
 
-function App() {
+export default function App() {
   return <Editor />;
 }
 
-export default App;
