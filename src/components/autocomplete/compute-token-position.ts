@@ -48,14 +48,14 @@ function computeTokenPositionOfChildNode(
         return undefined;
     }
     for (let i = 0; i < parseTree.childCount; i++) {
-        let position = computeTokenPosition(parseTree.getChild(i), tokens, caretPosition, identifierTokenTypes);
+        const position = computeTokenPosition(parseTree.getChild(i), tokens, caretPosition, identifierTokenTypes);
         if (position !== undefined) {
             return position;
         }
     }
     if(parseTree.start && parseTree.stop) {
         for(let i = parseTree.start.tokenIndex; i <= parseTree.stop.tokenIndex; i++) {
-            let pos = positionOfToken(tokens.get(i), tokens.get(i).text || '', caretPosition, identifierTokenTypes, parseTree);
+            const pos = positionOfToken(tokens.get(i), tokens.get(i).text || '', caretPosition, identifierTokenTypes, parseTree);
             if(pos) {
                return pos;
             }

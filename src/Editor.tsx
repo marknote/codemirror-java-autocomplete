@@ -1,5 +1,7 @@
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
 import { autocompletion, completeFromList } from '@codemirror/autocomplete';
+import { indentUnit } from '@codemirror/language';
+
 import { java } from '@codemirror/lang-java';
 import { getSuggestions } from './components/autocomplete/suggest';
 
@@ -12,29 +14,12 @@ const javaCompletion = autocompletion({
       async (ctx) => {
         const { pos } = ctx;
         try {
-          const result = getSuggestions(currentContent, currentCursor);
-          if (!result || result.length === 0) {
+          const completions = getSuggestions(currentContent, currentCursor);
+          if (!completions || completions.length === 0) {
             console.log('Unable to get completions', { pos });
             return null;
           }
-          console.log('result', result);
-          const entries = result.map(item => {
-            return {type: 'keywords', label: item}
-          });
-          const completions = {entries};
-
-  
-          return completeFromList(
-            // @ts-ignore
-            completions.entries.map((c, i) => {
-              let suggestions = {
-                type: c.type,
-                label: c.label,
-              };
-  
-              return suggestions;
-            })
-          )(ctx);
+          return completeFromList(completions)(ctx);
         } catch (e) {
           console.log('Unable to get completions', { pos, error: e });
           return null;
@@ -59,8 +44,10 @@ function onCodeChange(value: string, viewUpdate:ViewUpdate) {
 export default function Editor() {
     const initCode = `
 public class Demo {
+    private List<String> lists = new ArrayList<>();
     public static void main(String[] args) {
-        System.out.println("Hello");
+      String message = "";
+      System.out.println(message);
     }
 }
     `;
@@ -68,7 +55,7 @@ public class Demo {
     <CodeMirror
       value={initCode}
       height="100vh"
-      extensions={[javaCompletion, java()]}
+      extensions={[javaCompletion, java(), indentUnit.of('    ')]}
       onChange={(value, viewUpdate) => {
         onCodeChange(value, viewUpdate);
       }}
