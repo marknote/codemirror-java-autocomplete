@@ -2,7 +2,7 @@ import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { JavaLexer } from '../../generated/JavaLexer';
 import { JavaParser } from '../../generated/JavaParser';
 import * as c3 from 'antlr4-c3';
-import {CaretPosition,  TokenPosition} from './types';
+import {CaretPosition} from './types';
 import { TerminalNode} from 'antlr4ts/tree';
 import { computeTokenPosition } from './compute-token-position';
 import { Completion } from '@codemirror/autocomplete';
