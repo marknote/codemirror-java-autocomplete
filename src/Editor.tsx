@@ -46,8 +46,12 @@ export default function Editor() {
 public class Demo {
     private List<String> lists = new ArrayList<>();
     public static void main(String[] args) {
-      String message = "";
-      System.out.println(message);
+        String message = "";
+        System.out.println(message);
+    }
+    
+    private void doSomething() {
+        
     }
 }
     `;
