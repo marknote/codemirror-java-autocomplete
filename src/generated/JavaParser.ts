@@ -1302,7 +1302,7 @@ export class JavaParser extends Parser {
 			if (_la === JavaParser.LPAREN) {
 				{
 				this.state = 416;
-				this.arguments();
+				this.arguments2();
 				}
 			}
 
@@ -7244,7 +7244,7 @@ export class JavaParser extends Parser {
 					this.state = 1520;
 					this.match(JavaParser.THIS);
 					this.state = 1521;
-					this.arguments();
+					this.arguments2();
 					}
 					break;
 				default:
@@ -8068,7 +8068,7 @@ export class JavaParser extends Parser {
 			this.enterOuterAlt(_localctx, 1);
 			{
 			this.state = 1674;
-			this.arguments();
+			this.arguments2();
 			this.state = 1676;
 			this._errHandler.sync(this);
 			switch ( this.interpreter.adaptivePredict(this._input, 206, this._ctx) ) {
@@ -8483,7 +8483,7 @@ export class JavaParser extends Parser {
 				this.enterOuterAlt(_localctx, 1);
 				{
 				this.state = 1739;
-				this.arguments();
+				this.arguments2();
 				}
 				break;
 			case JavaParser.DOT:
@@ -8509,7 +8509,7 @@ export class JavaParser extends Parser {
 				case 1:
 					{
 					this.state = 1745;
-					this.arguments();
+					this.arguments2();
 					}
 					break;
 				}
@@ -8571,7 +8571,7 @@ export class JavaParser extends Parser {
 				this.state = 1752;
 				this.identifier();
 				this.state = 1753;
-				this.arguments();
+				this.arguments2();
 				}
 				break;
 			default:
@@ -8593,7 +8593,7 @@ export class JavaParser extends Parser {
 		return _localctx;
 	}
 	// @RuleVersion(0)
-	public arguments(): ArgumentsContext {
+	public arguments2(): ArgumentsContext {
 		let _localctx: ArgumentsContext = new ArgumentsContext(this._ctx, this.state);
 		this.enterRule(_localctx, 246, JavaParser.RULE_arguments);
 		let _la: number;
@@ -10244,7 +10244,7 @@ export class EnumConstantContext extends ParserRuleContext {
 			return this.getRuleContext(i, AnnotationContext);
 		}
 	}
-	public arguments(): ArgumentsContext | undefined {
+	public arguments2(): ArgumentsContext | undefined {
 		return this.tryGetRuleContext(0, ArgumentsContext);
 	}
 	public classBody(): ClassBodyContext | undefined {
@@ -14322,7 +14322,7 @@ export class PrimaryContext extends ParserRuleContext {
 	public explicitGenericInvocationSuffix(): ExplicitGenericInvocationSuffixContext | undefined {
 		return this.tryGetRuleContext(0, ExplicitGenericInvocationSuffixContext);
 	}
-	public arguments(): ArgumentsContext | undefined {
+	public arguments2(): ArgumentsContext | undefined {
 		return this.tryGetRuleContext(0, ArgumentsContext);
 	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -14803,7 +14803,7 @@ export class ArrayCreatorRestContext extends ParserRuleContext {
 
 
 export class ClassCreatorRestContext extends ParserRuleContext {
-	public arguments(): ArgumentsContext {
+	public arguments2(): ArgumentsContext {
 		return this.getRuleContext(0, ArgumentsContext);
 	}
 	public classBody(): ClassBodyContext | undefined {
@@ -15170,7 +15170,7 @@ export class TypeArgumentsContext extends ParserRuleContext {
 
 
 export class SuperSuffixContext extends ParserRuleContext {
-	public arguments(): ArgumentsContext | undefined {
+	public arguments2(): ArgumentsContext | undefined {
 		return this.tryGetRuleContext(0, ArgumentsContext);
 	}
 	public DOT(): TerminalNode | undefined { return this.tryGetToken(JavaParser.DOT, 0); }
@@ -15216,7 +15216,7 @@ export class ExplicitGenericInvocationSuffixContext extends ParserRuleContext {
 	public identifier(): IdentifierContext | undefined {
 		return this.tryGetRuleContext(0, IdentifierContext);
 	}
-	public arguments(): ArgumentsContext | undefined {
+	public arguments2(): ArgumentsContext | undefined {
 		return this.tryGetRuleContext(0, ArgumentsContext);
 	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
