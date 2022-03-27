@@ -19,6 +19,8 @@
     "web-vitals": "^0.2.4"
   },
   "devDependencies": {
+    "@types/node": "^17.0.23",
+    "add": "^2.0.6",
     "antlr4ts-cli": "^0.5.0-alpha.4"
   },
   "scripts": {
