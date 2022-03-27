@@ -3,7 +3,7 @@ import { autocompletion, completeFromList } from '@codemirror/autocomplete';
 import { indentUnit } from '@codemirror/language';
 
 import { java } from '@codemirror/lang-java';
-import { getSuggestions } from '../components/autocomplete/suggest';
+import { getSuggestions } from './autocomplete/suggest';
 
 let currentContent = '';
 let currentCursor = {line: 0, column: 0};
