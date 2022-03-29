@@ -1,27 +1,20 @@
-import { CharStreams, CommonTokenStream } from 'antlr4ts';
-import { JavaLexer } from '../../generated/JavaLexer';
-import { JavaParser } from '../../generated/JavaParser';
+import { CommonTokenStream, Parser } from 'antlr4ts';
+
 import * as c3 from 'antlr4-c3';
-import {CaretPosition, TokenPosition} from './types';
-import { TerminalNode} from 'antlr4ts/tree';
+import {CaretPosition} from './types';
+import { ParseTree, TerminalNode} from 'antlr4ts/tree';
 import { computeTokenPosition } from './compute-token-position';
 import { Completion } from '@codemirror/autocomplete';
 
 
-
-export function getSuggestions(code: string, caretPosition: CaretPosition): Completion[] {
-    const lexer = new JavaLexer(CharStreams.fromString(code));
-    const tokenStream = new CommonTokenStream(lexer);
-    const parser = new JavaParser(tokenStream);
-    return getSuggestionsForParse(parser, caretPosition, tokenStream);
-}
-
-function getSuggestionsForParse(
-    parser: JavaParser,
+export function getSuggestionsForParse(
+    parser: Parser,
+    parseTree: ParseTree,
     caretPosition: CaretPosition,
-    tokenStream: CommonTokenStream) : Completion[]{
+    tokenStream: CommonTokenStream,
+    identifierType: number) : Completion[]{
 
-    const tokenPosition = computeTokenPosition(parser.expression(), tokenStream, caretPosition);
+    const tokenPosition = computeTokenPosition(parseTree, tokenStream, caretPosition);
     if (!tokenPosition) {
         return [];
     }
@@ -29,19 +22,8 @@ function getSuggestionsForParse(
     // Luckily, the Kotlin lexer defines all keywords and identifiers after operators,
     // so we can simply exclude the first non-keyword tokens
     const ignored:number[] = [];
-    //We don't handle labels for simplicity
     core.ignoredTokens = new Set(ignored);
-    /*core.preferredRules = new Set([
-        JavaParser.RULE_identifier,
-        JavaParser.RULE_memberDeclaration,
-        JavaParser.RULE_methodDeclaration,
-        JavaParser.RULE_variableDeclarator,
-        JavaParser.RULE_arguments,
-        JavaParser.RULE_fieldDeclaration,
-        JavaParser.RULE_constDeclaration,
-        JavaParser.RULE_variableDeclarator,
-        JavaParser.RULE_moduleDeclaration,
-    ]);*/
+
     const candidates = core.collectCandidates(tokenPosition.index);
     console.log(candidates);
     let completions: Completion[] = [];
@@ -56,7 +38,7 @@ function getSuggestionsForParse(
         }
     });
 
-    completions = completions.concat(suggestIdentifiers(tokenStream, tokenPosition, caretPosition));
+    completions = completions.concat(suggestIdentifiers(tokenStream, caretPosition, identifierType));
 
     const isIgnoredToken =
         tokenPosition.context instanceof TerminalNode &&
@@ -66,9 +48,10 @@ function getSuggestionsForParse(
 
 }
 
-function suggestIdentifiers(tokenStream: CommonTokenStream, tokenPosition: TokenPosition, caretPosition: CaretPosition): Completion[] {
+function suggestIdentifiers(tokenStream: CommonTokenStream,
+    caretPosition: CaretPosition, identifierType: number): Completion[] {
     return tokenStream.getTokens()
-    .filter(item => item.type === JavaLexer.IDENTIFIER
+    .filter(item => item.type === identifierType
         && item.text != null
         && item.line !== caretPosition.line
         )
