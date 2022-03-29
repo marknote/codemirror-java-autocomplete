@@ -4,30 +4,16 @@ import { autocompletion, completeFromList } from '@codemirror/autocomplete';
 import { indentUnit } from '@codemirror/language';
 
 import { java } from '@codemirror/lang-java';
-import { getSuggestions } from './autocomplete/suggest';
+import { completeJava } from './autocomplete/autocomplete-java';
 
-const initCode = `
-public class Demo {
-    private List<String> lists = new ArrayList<>();
-    public static void main(String[] args) {
-        String message = "";
-        System.out.println(message);
-    }
-    
-    private void doSomething() {
-        
-    }
+type EditorProps = {
+  initCode: string,
+  language: string
 }
-    `;
 
 
-
-
-
-
-export default function Editor() {
-  const [currentContent, setCurrentContent] = useState(initCode);
-
+export default function Editor(props: EditorProps) {
+  const [currentContent, setCurrentContent] = useState(props.initCode);
   const javaCompletion = autocompletion({
     activateOnTyping: true,
     override: [
@@ -39,7 +25,7 @@ export default function Editor() {
           const line = parts.length;
           const column = parts[parts.length - 1].length;
           const currentCursor = {line, column };
-          const completions = getSuggestions(currentContent, currentCursor);
+          const completions = completeJava(currentContent, currentCursor);
           if (!completions || completions.length === 0) {
             console.log('Unable to get completions', { pos });
             return null;
@@ -55,7 +41,7 @@ export default function Editor() {
 
   return (
     <CodeMirror
-      value={initCode}
+      value={currentContent}
       height="100vh"
       extensions={[javaCompletion, java(), indentUnit.of('    ')]}
       onChange={(value) => {
