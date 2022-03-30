@@ -1,20 +1,21 @@
 import  { useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
-import { autocompletion, completeFromList } from '@codemirror/autocomplete';
+import { autocompletion, completeFromList, Completion } from '@codemirror/autocomplete';
 import { indentUnit } from '@codemirror/language';
 
-import { java } from '@codemirror/lang-java';
-import { completeJava } from './autocomplete/autocomplete-java';
+import { CaretPosition } from './autocomplete/types';
+import { LanguageSupport } from '@codemirror/language';
 
 type EditorProps = {
   initCode: string,
-  language: string
+  language: string,
+  lang: LanguageSupport,
+  completor: (code: string, caretPosition: CaretPosition) => Completion[]
 }
-
 
 export default function Editor(props: EditorProps) {
   const [currentContent, setCurrentContent] = useState(props.initCode);
-  const javaCompletion = autocompletion({
+  const languageCompletion = autocompletion({
     activateOnTyping: true,
     override: [
       async (ctx) => {
@@ -25,7 +26,7 @@ export default function Editor(props: EditorProps) {
           const line = parts.length;
           const column = parts[parts.length - 1].length;
           const currentCursor = {line, column };
-          const completions = completeJava(currentContent, currentCursor);
+          const completions = props.completor(currentContent, currentCursor);
           if (!completions || completions.length === 0) {
             console.log('Unable to get completions', { pos });
             return null;
@@ -43,7 +44,7 @@ export default function Editor(props: EditorProps) {
     <CodeMirror
       value={currentContent}
       height="100vh"
-      extensions={[javaCompletion, java(), indentUnit.of('    ')]}
+      extensions={[languageCompletion, props.lang, indentUnit.of('    ')]}
       onChange={(value) => {
         setCurrentContent(value);
       }}
