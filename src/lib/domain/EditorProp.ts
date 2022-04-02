@@ -9,14 +9,17 @@ import { retrieveLanguage } from './editor-languages';
 
 type Completor = (code: string, caretPosition: CaretPosition) => Completion[];
 
+
+
 export default class EditorProp  {
     langFn: LanguageSupport;
-    completor: Completor;
+    completor: Completor | null;
     indent: Extension;
 
     constructor (
         public readonly code: string,
-        public readonly language: string
+        public readonly language: string,
+        public readonly currentPath: string
     ) {
         this.langFn = EditorProp.fnFromLanguage(language);
         this.completor = EditorProp.completorFromLanguage(language);
@@ -35,11 +38,14 @@ export default class EditorProp  {
         }
     }
 
-    static  completorFromLanguage(lang: string): Completor {
-        if (lang === 'java') {
-            return completeJava;
-        } else {
-            return completeTs;
+    static completorFromLanguage(lang: string): Completor | null {
+        switch(lang) {
+            case 'java':
+                return completeJava;
+            case 'javascript':
+                return completeTs;
+            default:
+                return null;
         }
     }
 

@@ -27,9 +27,9 @@ const markdownEx = markdown({
   codeLanguages: [
     LanguageDescription.of({
       name: 'javascript',
-      alias: ['js', 'jsx', 'ts'],
+      alias: ['js', 'jsx', 'ts', 'tsx'],
       async load() {
-        return javascript();
+        return javascript({jsx: true, typescript: true});
       },
     }),
     LanguageDescription.of({
@@ -75,6 +75,7 @@ const LANGUAGES = {
   'javascript': javascript(),
   'java': java(),
   'js': javascript(),
+  'jsx': javascript({jsx: true}),
   'json': json(),
   'lua': new LanguageSupport(StreamLanguage.define(lua)),
   'markdown': markdownEx,
@@ -85,13 +86,13 @@ const LANGUAGES = {
   'rust': rust(),
   'sql': sql(),
   'swift': new LanguageSupport(StreamLanguage.define(swift)),
+  'typescript': javascript({jsx: true, typescript: true}),
   'vb': new LanguageSupport(StreamLanguage.define(vb)),
   'vbscript': new LanguageSupport(StreamLanguage.define(vbScript)),
   'xml': xml(),
   'yaml': new LanguageSupport(StreamLanguage.define(yaml)),
 };
 const LANGUAGE_MAP = new Map<string, LanguageSupport>(Object.entries(LANGUAGES));
-
 
 export const retrieveLanguage = (name: string) => {
   return LANGUAGE_MAP.get(name) || text;
