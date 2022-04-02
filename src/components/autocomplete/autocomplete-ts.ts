@@ -1,5 +1,5 @@
 import { Completion } from '@codemirror/autocomplete';
-import { CaretPosition } from './types';
+import { CaretPosition } from '../../lib/domain/types';
 import  TsServer from './ts/tsserver';
 import EventEmitter from 'events';
 

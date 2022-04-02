@@ -1,7 +1,7 @@
 import { Completion } from '@codemirror/autocomplete';
 import { JavaLexer } from '../../generated/JavaLexer';
 import { JavaParser } from '../../generated/JavaParser';
-import { CaretPosition } from './types';
+import { CaretPosition } from '../../lib/domain/types';
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { getSuggestionsForParse } from './suggest';
 

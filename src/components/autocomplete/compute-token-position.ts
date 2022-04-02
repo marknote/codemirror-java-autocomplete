@@ -1,7 +1,7 @@
 import {ParseTree, TerminalNode} from 'antlr4ts/tree';
 
 import {ParserRuleContext, Token, TokenStream} from 'antlr4ts';
-import {CaretPosition, TokenPosition} from './types';
+import {CaretPosition, TokenPosition} from '../../lib/domain/types';
 
 export function tokenPositionComputer(identifierTokenTypes: number[] = []) {
     return (parseTree: ParseTree, tokens: TokenStream, caretPosition: CaretPosition) =>

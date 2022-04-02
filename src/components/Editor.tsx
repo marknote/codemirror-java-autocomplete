@@ -1,20 +1,13 @@
 import  { useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
-import { autocompletion, completeFromList, Completion } from '@codemirror/autocomplete';
-import { indentUnit } from '@codemirror/language';
+import { autocompletion, completeFromList } from '@codemirror/autocomplete';
+import EditorProp from '../lib/domain/EditorProp';
 
-import { CaretPosition } from './autocomplete/types';
-import { LanguageSupport } from '@codemirror/language';
 
-type EditorProps = {
-  initCode: string,
-  language: string,
-  lang: LanguageSupport,
-  completor: (code: string, caretPosition: CaretPosition) => Completion[]
-}
 
-export default function Editor(props: EditorProps) {
-  const [currentContent, setCurrentContent] = useState(props.initCode);
+
+export default function Editor(props: EditorProp) {
+  const [currentContent, setCurrentContent] = useState(props.code);
   const languageCompletion = autocompletion({
     activateOnTyping: true,
     override: [
@@ -44,7 +37,7 @@ export default function Editor(props: EditorProps) {
     <CodeMirror
       value={currentContent}
       height="100vh"
-      extensions={[languageCompletion, props.lang, indentUnit.of('    ')]}
+      extensions={[languageCompletion, props.langFn, props.indent]}
       onChange={(value) => {
         setCurrentContent(value);
       }}

@@ -1,7 +1,7 @@
 import { CommonTokenStream, Parser } from 'antlr4ts';
 
 import * as c3 from 'antlr4-c3';
-import {CaretPosition} from './types';
+import {CaretPosition} from '../../lib/domain/types';
 import { ParseTree, TerminalNode} from 'antlr4ts/tree';
 import { computeTokenPosition } from './compute-token-position';
 import { Completion } from '@codemirror/autocomplete';
