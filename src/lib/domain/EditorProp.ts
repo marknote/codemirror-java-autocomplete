@@ -3,10 +3,9 @@ import { Extension } from '@codemirror/state';
 
 import { Completion } from '@codemirror/autocomplete';
 import { CaretPosition } from './types';
-import { java } from '@codemirror/lang-java';
-import { javascript } from '@codemirror/lang-javascript';
 import { completeTs } from '../../components/autocomplete/autocomplete-ts';
 import { completeJava } from '../../components/autocomplete/autocomplete-java';
+import { retrieveLanguage } from './editor-languages';
 
 type Completor = (code: string, caretPosition: CaretPosition) => Completion[];
 
@@ -25,11 +24,7 @@ export default class EditorProp  {
     }
 
     static  fnFromLanguage(lang: string): LanguageSupport {
-        if (lang === 'java') {
-            return java();
-        } else {
-            return javascript();
-        }
+        return retrieveLanguage(lang);
     }
 
     static indentFromLanguage(lang: string): Extension {

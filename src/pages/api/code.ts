@@ -3,7 +3,7 @@ import { CodeInfo } from '../../lib/domain/types';
 
 export default (req: NextApiRequest, res: NextApiResponse<CodeInfo>) => {
   const path = req.query['path'];
-  let code = { code: "console.log('Hello')", language: 'javascript' };
+  let code = { code: "console.log('Hello');", language: 'javascript' };
   if (path.includes('.java')) {
     code = {
       code: `
